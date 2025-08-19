@@ -1,0 +1,6 @@
+names:
+  0: ball
+  1: laser
+path: c:\Users\Opal\PycharmProjects\Ball_Detection\training_data\yolo_dataset
+train: train/images
+val: val/images
