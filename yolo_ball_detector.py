@@ -5,15 +5,29 @@ import torch
 
 class YOLOBallDetector:
     def __init__(self, model_path='yolov8n.pt', conf=0.3):
-        # Force YOLO to use GPU if available
-        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        # Check GPU availability
+        cuda_available = torch.cuda.is_available()
+        device = 'cuda' if cuda_available else 'cpu'
+        
+        print("🔍 GPU Status Check:")
+        print(f"  CUDA available: {cuda_available}")
+        print(f"  Device selected: {device}")
+        
+        if cuda_available:
+            gpu_name = torch.cuda.get_device_name(0)
+            gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3
+            print(f"  GPU: {gpu_name}")
+            print(f"  VRAM: {gpu_memory:.1f} GB")
+        
+        # Load and configure YOLO model
         self.model = YOLO(model_path)
-        self.model.to(device)
+        if cuda_available:
+            self.model.to(device)
+            print("🚀 YOLO model moved to GPU!")
+        else:
+            print("⚠️ YOLO running on CPU only")
+            
         self.conf = conf
-        print("CUDA available:", torch.cuda.is_available())
-        print("YOLO running on:", device)
-        if device == 'cuda':
-            print("CUDA device:", torch.cuda.get_device_name(0))
         
         # Check if using custom model
         self.is_custom_model = 'custom' in str(model_path).lower() or 'ball' in str(model_path).lower()
